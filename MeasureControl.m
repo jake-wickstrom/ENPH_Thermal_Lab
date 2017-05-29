@@ -3,7 +3,6 @@ a = arduino();
 
 %CONSTANTS
 CALIBRATION_LENGTH = 300;
-scaleFactor2 = [1.0307,0.9819,0.98946,0.98874,1.0278,0.98146]; %experimentally determined scaling coefficients
 
 volts = zeros([6 2000]);
 calibrationData = zeros([6 CALIBRATION_LENGTH]);
@@ -31,9 +30,9 @@ for i = 1:CALIBRATION_LENGTH
     pause(0.01)
 end
 
-meanVoltage = mean2(calibrationData)
+meanVoltage = mean2(calibrationData);
 
-scaleFactor = mean(calibrationData,2)./meanVoltage
+scaleFactor = mean(calibrationData,2)./meanVoltage;
 
 %create figure to dipslay plots
 f = figure;
@@ -49,13 +48,13 @@ for i = 1:2000
     volts(6,i) = readVoltage(a,'A5')/scaleFactor(6);
     
     %display voltage values on plot
-    plot(volts(1,:).*scaleFactor(1))
+    plot(volts(1,:))
     hold;
-    plot(volts(2,:).*scaleFactor(2))
-    plot(volts(3,:).*scaleFactor(3))
-    plot(volts(4,:).*scaleFactor(4))
-    plot(volts(5,:).*scaleFactor(5))
-    plot(volts(6,:).*scaleFactor(6))
+    plot(volts(2,:))
+    plot(volts(3,:))
+    plot(volts(4,:))
+    plot(volts(5,:))
+    plot(volts(6,:))
     legend('1','2','3','4','5','6')
     hold;
     pause(.05);
@@ -66,4 +65,3 @@ for i = 1:2000
         break
     end  
 end
-
