@@ -2,10 +2,12 @@ clear
 a = arduino();
 
 %CONSTANTS
-CALIBRATION_LENGTH = 300;
+CALIBRATION_LENGTH = 500;
+
+Measurement_Length = 5000;
 
 volts = zeros([6 2000]);
-calibrationData = zeros([6 CALIBRATION_LENGTH]);
+calibrationData = zeros([6 Measurement_Length]);
 
 %% Temperature Calibration
 
@@ -38,7 +40,7 @@ scaleFactor = mean(calibrationData,2)./meanVoltage;
 f = figure;
 
 %% Data Loop 
-for i = 1:2000
+for i = 1:Measurement_Length
     %record voltage values from sensors
     volts(1,i) = readVoltage(a,'A0')/scaleFactor(1);
     volts(2,i) = readVoltage(a,'A1')/scaleFactor(2);
