@@ -1,69 +1,97 @@
+l = 0.3; %Length of rod
+k = 205; %Conductivity
+c = 900; %Heat capacity
+p = 2700; %density
+r = 0.01 ; %Radius
+k_c = 5; 
+sigma = 5.67*(10^-8); %Stefan-Boltzman constant
+P = 10; %Power
+
+delta_x = 0.01; %Distance step
+N = l / delta_x; %Total Intervals
+delta_t = 0.1; %Time step
+%T_heat = 50; %Heating Temperature
+T_amb = 20; %Ambient Temperature
+
+T_coeff = delta_t/(c * p * pi * (r^2) * delta_x);
+
+time = 1800;
+
+
+x = linspace(0,l,((l/delta_x))); %Distance vector
+x_mid = x+(delta_x/2); %Midpoint vector
+
+Temp = zeros([time ((l/delta_x))]); %Temperature vector
+Temp_change = zeros([1 ((l/delta_x))]); %Temperature change vector
+Temp =Temp +T_amb;
+
+ for i = 2:time
+    %Mid points
+    Temp_change(i,2:N-1) = (k*delta_t/(c*p))*((Temp(1:N-2)-2*Temp(2:N-1)+Temp(3:N))/(delta_x^2));
+        
+    %End points
+    Temp_change(i,1) = Temp_change(1) +((-k/(c*p*(delta_x^2)))*(Temp(1) - Temp(2))*(delta_t)); %Transfer to next slice, 1 - 2
+    Temp_change(i,1) = Temp_change(1) +((T_coeff)*P); %Gain from power source
+    
+    Temp_change(i,30) = (((k/(c*p*(delta_x^2)))*(Temp(29) - Temp(30))*(delta_t))); %Transfer from slice before
+    
+    Temp_change(i) = Temp_change(i) - (T_coeff)*(2*pi*r*delta_x)*(k_c*(Temp-T_amb)+(sigma*((Temp+273).^4-(T_amb+273)^4))); %Convective and radiative loss
+     
+    Temp(i) = Temp_change(i) + Temp(i-1);
+
+    
+    %Plot settings
+    
+    
+    %pause(.01);
+end
+
+plot(1:time,Temp(:, 10));
+    title('Temperature vs Distance');
+
+
+%% Data Loop 
 clear
 a = arduino();
 
-%CONSTANTS
-CALIBRATION_LENGTH = 500;
+time = 18000;
+scaleFactor = [1.01984713,0.9782054819,0.9905064832,0.9990749907,1.023384885,0.9889810292]; %experimentally determined scaling coefficients
+x = [0.03 0.076 0.114 0.190 0.2755];
 
-Measurement_Length = 5000;
+volts = zeros([6 time]);
 
-volts = zeros([6 2000]);
-calibrationData = zeros([6 Measurement_Length]);
 
-%% Temperature Calibration
 
-%Calibration begin message. Waits until ok is pressed
-uiwait(msgbox('Ready to calibrate. Place all temperature sensors together and press OK','Calibrating','modal'))
-
-%Calibration warning message
-h = msgbox('Calibrating... Please do not touch sensors.');
-%Gets children of UI element and delete the ok button so warning stays on
-%screen during 
-child = get(h,'Children');
-delete(child(1))
-
-%% Calibration loop
-for i = 1:CALIBRATION_LENGTH
-    calibrationData(1,i) = readVoltage(a,'A0');
-    calibrationData(2,i) = readVoltage(a,'A1');
-    calibrationData(3,i) = readVoltage(a,'A2');
-    calibrationData(4,i) = readVoltage(a,'A3');
-    calibrationData(5,i) = readVoltage(a,'A4');
-    calibrationData(6,i) = readVoltage(a,'A5');
-    pause(0.01)
-end
-
-meanVoltage = mean2(calibrationData);
-
-scaleFactor = mean(calibrationData,2)./meanVoltage;
-
-%create figure to dipslay plots
-f = figure;
-
-%% Data Loop 
-for i = 1:Measurement_Length
+for i = 1:time
     %record voltage values from sensors
-    volts(1,i) = readVoltage(a,'A0')/scaleFactor(1);
-    volts(2,i) = readVoltage(a,'A1')/scaleFactor(2);
-    volts(3,i) = readVoltage(a,'A2')/scaleFactor(3);
-    volts(4,i) = readVoltage(a,'A3')/scaleFactor(4);
-    volts(5,i) = readVoltage(a,'A4')/scaleFactor(5);
-    volts(6,i) = readVoltage(a,'A5')/scaleFactor(6);
+    volts(1,i) = readVoltage(a,'A0');%/scaleFactor(1);
+    volts(2,i) = readVoltage(a,'A1');%/scaleFactor(2);
+    volts(3,i) = readVoltage(a,'A2');%/scaleFactor(3);
+    volts(4,i) = readVoltage(a,'A3');%/scaleFactor(4);
+    volts(5,i) = readVoltage(a,'A4');%/scaleFactor(5);
+    volts(6,i) = readVoltage(a,'A5');%/scaleFactor(6);
     
-    %display voltage values on plot
-    plot(volts(1,:))
-    hold;
-    plot(volts(2,:))
-    plot(volts(3,:))
-    plot(volts(4,:))
-    plot(volts(5,:))
-    plot(volts(6,:))
-    legend('1','2','3','4','5','6')
-    hold;
-    pause(.05);
+    clf('reset')
+    plot(x(:) , volts(1:5,i)*100, '*');
+    ylim([0 80]);
     
-    %if the figure has been closed, break out of the temperature
-    %measurement loop
-    if not(ishandle(f))
-        break
-    end  
+    if mod(i,10) == 0
+%     plot(i,volts(1,i)*scaleFactor(1));
+%     plot(i,volts(2,i)*scaleFactor(2));
+%     plot(i,volts(3,i)*scaleFactor(3));
+%     plot(i,volts(4,i)*scaleFactor(4));
+%     plot(i,volts(5,i)*scaleFactor(5));
+    
+    end
+    pause(.1);
+    
+    if mod(i,300) == 0
+        c0 = clock;
+        t0 = 3600*c0(4) + 60*c0(5) + c0(6); % Time in minutes
+        ts = datetime('now');
+        DateString = datestr(ts,30);
+        filename = ['C:\Users\Cam\workspace\ENPH_Thermal_Lab\Al-rod_SW_20s_period' DateString '.csv'];
+        csvwrite(filename,volts);
+    end
 end
+
