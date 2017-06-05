@@ -52,11 +52,11 @@ Temp =Temp +T_amb;
 
 figure
 hold on
-plot(Temp(:,1));
-plot(Temp(:,2));
 plot(Temp(:,3));
-plot(Temp(:,4));
-plot(Temp(:,5));
+plot(Temp(:,8));
+plot(Temp(:,11));
+plot(Temp(:,19));
+plot(Temp(:,28));
 
 figure
 plot(Temp(time,:));
@@ -81,7 +81,7 @@ ts = datetime('now');
 DateString = datestr(ts,30);
 
 for i = 1:time
-    %record voltage values from sensors
+    %record raw voltage values from sensors
     volts(i,1) = readVoltage(a,'A0');%/scaleFactor(1);
     volts(i,2) = readVoltage(a,'A1');%/scaleFactor(2);
     volts(i,3) = readVoltage(a,'A2');%/scaleFactor(3);
