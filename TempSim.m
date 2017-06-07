@@ -23,9 +23,10 @@ Temp = zeros([time ((l/delta_x))]); %Temperature vector
 Temp_change = zeros([1 ((l/delta_x))]); %Temperature change vector
 Temp =Temp +T_amb;
 
- for i = 2:time
-     
-    if mod(floor(i/frequency)+1,2)== 0
+ for i = 2:time*10
+    if frequency == 0
+        P = Power;
+    else if mod(floor(i/frequency)+1,2)== 0
         P = 0;
     else
         P = Power;
@@ -44,23 +45,5 @@ Temp =Temp +T_amb;
      
     Temp(i,:) = Temp_change + Temp(i-1,:);
 
-    %Plot settings
-        
-    %pause(.01);
- end
-
-figure
-hold on
-plot(Temp(:,3));
-plot(Temp(:,8));
-plot(Temp(:,11));
-plot(Temp(:,19));
-plot(Temp(:,28));
-
-figure
-plot(Temp(time,:));
-title('Temperature vs Distance');
-
-
-
+    end
 end
