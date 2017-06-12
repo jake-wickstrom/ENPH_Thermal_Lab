@@ -1,30 +1,33 @@
-function [ Temp , time_array] = TempSim2( Power , time, frequency )
+function [ Temp , time_array] = TempSim2( Power , time, frequency, c, k, em,  k_c )
 %{Pass this function a Power (in Watts) and time and the function will simulate
+% the power loss of an alluminum rod with the following characteristics
 %}
 length = 0.3; %Length of rod
-k = 205; %Conductivity - should be 205
-c = 921; %Heat capacity - should be 921
-p = 2700; %density - should be 2700
+%k = 180; %Conductivity - should be 205
+%c = 820; %Heat capacity - should be 921
+p = 2600; %density - should be 2700
 diameter = .0224;
 r = diameter/2 ; %Radius
-k_c = 6.1; %should be 5
-sigma = 5.67*(10^-8); %Stefan-Boltzman constant
-em = .25; %Emmisivity
+%k_c = 7; %should be 5
+sigma = 5.67E-8; %Stefan-Boltzman constant
+%em = .3; %Emmisivity
 
 delta_x = 0.01; %Distance step
 N = length / delta_x; %Total Intervals
-delta_t = .5; %Time step
-T_amb = 20; %Ambient Temperature
-T_init = 30; %Initial Temperature
+delta_t = 0.1; %Time step
+T_amb = 25; %Ambient Temperature
+T_init = 25; %Initial Temperature
 
+%Coefficient for use in Power -> Temperature equation
 T_coeff = delta_t/(c * p * pi * (r^2) * delta_x);
 
-x = linspace(0,length,((length/delta_x))); %Distance vector
+x = linspace(0,length,length/delta_x); %Distance vector
 
-%Temp = zeros([time*2 ((length/delta_x))]); %Temperature vector
-Temp_change = zeros([1 ((length/delta_x))]); %Temperature change vector
+%Set initial temperatures
+Temp_change = zeros([1 length/delta_x]); %Temperature change vector
 Temp(1,:) = linspace(T_init , T_init , N);
 
+%Set Power and flag for modulation
 P = Power;
 flag = false;
 
@@ -37,8 +40,11 @@ time_array(1) = 0;
 i=1;
 
 while time_array(end) < time
+    
+    %Increment time and store it in an array
     i = i + 1;
     time_array(i) = time_array(i-1) + delta_t;
+    
     %If power is being modulated, check if power on or off
     if ~flag
         if (mod(floor(time_array(i)/frequency)+1,2)== 0)
