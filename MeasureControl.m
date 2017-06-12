@@ -33,7 +33,7 @@ for i = 1:time
     pause(.1);
     
     if mod(i,10) == 0
-        filename = ['C:\Users\Cam\workspace\ENPH_Thermal_Lab\Al-rod_SW_20s_period' DateString '.csv'];
+        filename = ['C:\Users\jtwic\workspace\ENPH_Thermal_Lab\Al-rod_SW_20s_period' DateString '.csv'];
         csvwrite(filename,volts);
     end
 end
