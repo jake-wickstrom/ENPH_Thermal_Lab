@@ -15,8 +15,8 @@ sigma = 5.67E-8; %Stefan-Boltzman constant
 delta_x = 0.01; %Distance step
 N = length / delta_x; %Total Intervals
 delta_t = 0.1; %Time step
-T_amb = 25; %Ambient Temperature
-T_init = 25; %Initial Temperature
+T_amb = 24.5; %Ambient Temperature
+T_init = 27; %Initial Temperature
 
 %Coefficient for use in Power -> Temperature equation
 T_coeff = delta_t/(c * p * pi * (r^2) * delta_x);
