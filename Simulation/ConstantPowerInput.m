@@ -13,9 +13,9 @@ data_record = array2table(data_record,'VariableNames',{'Sensor_1' 'Sensor_2' 'Se
 
 t  = data_record{:,'Time'};
 
-p = 6.3; %Power - Watts
-c = 920; %Heat capacity - should be 921
-k = 140; %Conductivity - should be 205
+p = 6.8; %Power - Watts
+c = 1000; %Heat capacity - should be 921
+k = 160; %Conductivity - should be 205
 em = 0.95; %emmisivity
 k_c = 7.5; 
 
